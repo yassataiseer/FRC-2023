@@ -16,6 +16,9 @@ Any other folders you see will be ignored by git and as a result nothing to worr
 #### Setup of hardware:
 Use a windows 7+ computer however code can still be compiled on linux and macos however not ran on the robot itselft.
 
+One usb camera must be plugged into the robot via the rasbperry pi ports. Make sure to remove
+the method in ```robot.java``` if you dont want to use that camera module
+
 ###### Software needed:
 tbd
 

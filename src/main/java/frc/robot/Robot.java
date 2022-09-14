@@ -22,7 +22,8 @@ import frc.robot.commands.driveCommands.SimpleDrive;
 import frc.robot.commands.driveCommands.SimpleServo;
 import com.studica.frc.Servo;
 import frc.robot.subsystems.DriveTrain;
-
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.cscore.UsbCamera;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -40,7 +41,7 @@ public class Robot extends TimedRobot {
 
   private Servo m_servo = new Servo(1);
   
-  
+  UsbCamera CurrentCamera;
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -50,6 +51,8 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    CurrentCamera = CameraServer.getInstance().startAutomaticCapture(0);
+
   }
 
   /**
