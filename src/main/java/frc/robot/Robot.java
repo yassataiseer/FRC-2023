@@ -24,6 +24,8 @@ import com.studica.frc.Servo;
 import frc.robot.subsystems.DriveTrain;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.cscore.UsbCamera;
+import edu.wpi.cscore.CvSink;
+import edu.wpi.cscore.CvSource;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -41,7 +43,6 @@ public class Robot extends TimedRobot {
 
   private Servo m_servo = new Servo(1);
   
-  UsbCamera CurrentCamera;
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -51,7 +52,7 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-    CurrentCamera = CameraServer.getInstance().startAutomaticCapture(0);
+    CameraInit();//remove this if you dont need cameras
 
   }
 
@@ -172,5 +173,12 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
+  }
+  void CameraInit(){
+    UsbCamera Camera1 = CameraServer.getInstance().startAutomaticCapture(0);// sets up camera
+    Camera1.setExposureManual(2);
+    CvSink Sink1 = CameraServer.getInstance().getVideo();
+    CvSource OutputStream = CameraServer.getInstance().putVideo("TESTVID",640,480);
+
   }
 }
