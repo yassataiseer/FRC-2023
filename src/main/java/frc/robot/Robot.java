@@ -20,6 +20,7 @@ import frc.robot.commands.auto.MultipleCommands;
 import frc.robot.GamepadConstants;
 import frc.robot.commands.driveCommands.SimpleDrive;
 import frc.robot.commands.driveCommands.SimpleServo;
+import frc.robot.commands.driveCommands.StopMotors;
 import com.studica.frc.Servo;
 import frc.robot.subsystems.DriveTrain;
 import edu.wpi.first.cameraserver.CameraServer;
@@ -30,6 +31,7 @@ import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.core.Scalar;
+import org.opencv.core.Core;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -39,8 +41,8 @@ import org.opencv.core.Scalar;
  */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
-
   private RobotContainer m_robotContainer;
+  private String CurrentMode = "none";
   private final DifferentialDrive m_robotDrive =
       new DifferentialDrive(new TitanQuad(42,0), new TitanQuad(42,2));
   private final Joystick m_stick = new Joystick(GamepadConstants.DRIVE_USB_PORT);
@@ -58,7 +60,6 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
     CameraInit();//remove this if you dont need cameras
-   
   }
 
   /**
@@ -82,6 +83,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
+    CurrentMode = "none";
     //Check to see if autoChooser has been created
     if(null == RobotContainer.autoChooser)
     {
@@ -114,7 +116,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    
+    CurrentMode = "auto";
     
   }
 
@@ -123,9 +125,11 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-    
     double CurrentAngle = m_servo.getAngle();
-
+    while(m_stick.getPOV(0)==90){
+      CurrentAngle+=1;
+      m_servo.setAngle(CurrentAngle);
+    }
     while(m_stick.getPOV(0)==90){
       CurrentAngle+=1;
       m_servo.setAngle(CurrentAngle);
@@ -135,10 +139,13 @@ public class Robot extends TimedRobot {
       m_servo.setAngle(CurrentAngle);
     }
     m_robotDrive.arcadeDrive(m_stick.getY(), m_stick.getX());
+
+
   }
 
   @Override
   public void teleopInit() {
+    CurrentMode = "teleop";
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
@@ -209,9 +216,22 @@ public class Robot extends TimedRobot {
               // skip the rest of the current iteration
               continue;
             }
+            
+            Scalar LowBlue = new Scalar(110, 50, 50);
+            Scalar HighBlue = new Scalar(130, 255, 255);
+            Mat Hsv = new Mat();
+            Imgproc.cvtColor(mat,Hsv, Imgproc.COLOR_BGR2HSV);
+            Mat Mask = new Mat();
+            Core.inRange(Hsv, LowBlue, HighBlue, mat);
             // Put a rectangle on the image
-            Imgproc.rectangle(
-                mat, new Point(100, 100), new Point(400, 400), new Scalar(255, 255, 255), 5);
+            if(CurrentMode=="auto"){
+              Imgproc.rectangle(
+                mat, new Point(100, 100), new Point(300, 400), new Scalar(255, 55, 0), 5);
+            }
+              Imgproc.rectangle(
+                mat, new Point(50, 50), new Point(400, 400), new Scalar(255, 255, 255), 5);
+            
+
             // Give the output stream a new image to display
             outputStream.putFrame(mat);
           }
