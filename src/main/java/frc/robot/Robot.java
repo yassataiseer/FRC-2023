@@ -11,6 +11,8 @@ import com.studica.frc.TitanQuad;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -32,7 +34,11 @@ import org.opencv.core.Point;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.core.Scalar;
 import org.opencv.core.Core;
-
+import org.opencv.core.Size;
+import org.opencv.core.MatOfPoint;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
  * each mode, as described in the TimedRobot documentation. If you change the name of this class or
@@ -216,17 +222,30 @@ public class Robot extends TimedRobot {
               // skip the rest of the current iteration
               continue;
             }
-            
+            /*Shuffleboard.getTab("DRIVE").add("LOWRED", 1)
+            .withWidget(BuiltInWidgets.kNumberSlider)
+            .withProperties(Map.of("min",0,"max",255))
+            .getEntry();*/
+
             Scalar LowBlue = new Scalar(110, 50, 50);
             Scalar HighBlue = new Scalar(130, 255, 255);
             Mat Hsv = new Mat();
             Imgproc.cvtColor(mat,Hsv, Imgproc.COLOR_BGR2HSV);
             Mat Mask = new Mat();
+            Mat hierarchy = new Mat();
             Core.inRange(Hsv, LowBlue, HighBlue, mat);
             // Put a rectangle on the image
             if(CurrentMode=="auto"){
+            
               Imgproc.rectangle(
                 mat, new Point(100, 100), new Point(300, 400), new Scalar(255, 55, 0), 5);
+              List<MatOfPoint> contours = new ArrayList<>();
+              Imgproc.findContours(mat, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+              int Area = 0;
+              //for(int i=0;i<=contours.size();i++){
+              //  Area += Imgproc.contourArea(contours.get(i));
+              //}
+              SmartDashboard.putNumber("DETECT", contours.size());
             }
               Imgproc.rectangle(
                 mat, new Point(50, 50), new Point(400, 400), new Scalar(255, 255, 255), 5);
